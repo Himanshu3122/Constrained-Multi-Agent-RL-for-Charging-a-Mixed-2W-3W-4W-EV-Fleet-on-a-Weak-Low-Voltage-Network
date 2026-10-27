@@ -1,0 +1,6 @@
+# Ablation: projection at execution only (no gradient through the QP).
+extends: ../default.yaml
+name: ablation_exec_projection_only
+scenario_set: full
+training:
+  projection_gradient: false

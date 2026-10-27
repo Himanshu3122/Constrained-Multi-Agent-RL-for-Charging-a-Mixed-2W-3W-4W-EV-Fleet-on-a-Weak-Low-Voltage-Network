@@ -1,0 +1,6 @@
+# Ablation: w/o fairness constraint.
+extends: ../default.yaml
+name: ablation_no_fairness
+scenario_set: full
+training:
+  use_fairness_constraint: false

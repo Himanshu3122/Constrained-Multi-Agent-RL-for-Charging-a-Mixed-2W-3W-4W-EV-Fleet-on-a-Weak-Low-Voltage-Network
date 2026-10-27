@@ -1,0 +1,14 @@
+# Baseline (vii): MAPPO with a concatenated-state critic and reward penalties for limit violations.
+extends: ../default.yaml
+name: mappo
+scenario_set: full
+env:
+  use_projection: false
+  violation_penalty_inr: 50.0   # assumption: penalty per AC voltage-violation bus-step
+agent:
+  critic_type: concat
+training:
+  federated: false
+  projection_gradient: false
+  use_fairness_constraint: false
+  use_degradation_constraint: false

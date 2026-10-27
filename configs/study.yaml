@@ -1,0 +1,40 @@
+# Reduced-scale study used for the revised manuscript (CPU-feasible).
+# One weak 250 kVA transformer, 80 EVs, a 60-day simulated year (40/10/10 days),
+# 3 training seeds. All numbers in the revised paper come from runs of this config
+# and of configs/study_*.yaml (same scenarios). See docs/assumptions.md for every
+# value marked "assumption".
+extends: default.yaml
+name: study
+
+feeder:
+  n_transformers: 1
+  transformer_kva: 250.0          # assumption: weak rural/semi-urban transformer
+  lv_buses_per_transformer: 24
+  households: 120
+  laterals_per_transformer: 3
+  segment_r_ohm: 0.02             # assumption: long LV segments (weak feeder)
+  segment_x_ohm: 0.006
+
+fleet:
+  2W: {count: 50}
+  3W: {count: 18}
+  4W: {count: 12}
+
+data:
+  n_days: 60
+  split: [40, 10, 10]
+
+training:
+  n_envs: 4
+  rounds: 150
+  local_iters: 1
+  ppo_epochs: 4
+  minibatches: 4
+  dual_lr: 0.05                   # revision: effective dual step (audit C3 / reviewer R1-02)
+  dual_normalize: true
+  lambda_max: 100.0
+  projection_grad_batch: 16       # revision: projection-gradient term estimated on 16 samples per minibatch
+
+evaluation:
+  seeds: [0, 1, 2]
+  methods: [uncontrolled, tou, bandits, solver_grounded, mpc, mpc_fair, solace]

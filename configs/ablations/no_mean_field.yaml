@@ -1,0 +1,6 @@
+# Ablation: w/o mean-field term in the critic.
+extends: ../default.yaml
+name: ablation_no_mean_field
+scenario_set: full
+agent:
+  use_mean_field: false

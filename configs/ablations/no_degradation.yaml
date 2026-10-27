@@ -1,0 +1,6 @@
+# Ablation: w/o degradation constraint.
+extends: ../default.yaml
+name: ablation_no_degradation
+scenario_set: full
+training:
+  use_degradation_constraint: false

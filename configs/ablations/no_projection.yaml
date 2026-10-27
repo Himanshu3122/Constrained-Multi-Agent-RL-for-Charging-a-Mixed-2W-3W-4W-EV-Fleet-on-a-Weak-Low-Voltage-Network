@@ -1,0 +1,9 @@
+# Ablation: w/o projection (reward penalties instead of Layer 3).
+extends: ../default.yaml
+name: ablation_no_projection
+scenario_set: full
+env:
+  use_projection: false
+  violation_penalty_inr: 50.0   # assumption
+training:
+  projection_gradient: false

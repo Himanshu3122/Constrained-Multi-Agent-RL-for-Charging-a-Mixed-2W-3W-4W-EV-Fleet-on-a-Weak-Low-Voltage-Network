@@ -1,0 +1,98 @@
+# Full research configuration (paper Sections V-VI, Tables II-III).
+# Values tagged "paper" are from the manuscript; "assumption" values are
+# documented in docs/assumptions.md. Running this config end to end is a
+# multi-day GPU/CPU workload; use configs/smoke.yaml to validate the pipeline.
+name: full
+seed: 0
+data_dir: data/processed
+checkpoint_dir: checkpoints
+results_dir: results
+
+feeder:
+  source: synthetic            # assumption A1 (topology not published)
+  n_transformers: 4            # paper
+  transformer_kva: 630.0       # paper
+  lv_buses_per_transformer: 62 # paper: 248 LV buses
+  households: 1340             # paper
+  v_base_kv: 0.415             # paper
+  laterals_per_transformer: 4  # assumption
+  segment_r_ohm: 0.006         # assumption
+  segment_x_ohm: 0.002         # assumption
+  household_pf: 0.95           # assumption
+  v_min: 0.95                  # paper
+  v_max: 1.05                  # paper
+  polygon_sides: 16            # paper
+
+fleet:                         # paper Table II (sessions_per_day, arrival_modes: assumption A3/A4)
+  2W: {count: 620, battery_kwh: [2.0, 4.0], chemistry: LFP, charger_kw: [1.0, 3.3], mean_dwell_h: 2.6,
+       v2g_capable: false, mean_energy_kwh: 2.0, sessions_per_day: 1.0,
+       arrival_modes: [[0.7, 18.0, 1.5], [0.3, 13.0, 2.0]]}
+  3W: {count: 220, battery_kwh: [5.0, 10.0], chemistry: LFP, charger_kw: [3.3, 7.4], mean_dwell_h: 3.4,
+       v2g_capable: true, mean_energy_kwh: 6.0, sessions_per_day: 1.0,
+       arrival_modes: [[0.5, 14.0, 3.0], [0.5, 21.0, 1.5]]}
+  4W: {count: 160, battery_kwh: [30.0, 60.0], chemistry: NMC, charger_kw: [7.4, 30.0], mean_dwell_h: 8.1,
+       v2g_capable: true, mean_energy_kwh: 15.0, sessions_per_day: 1.0,
+       arrival_modes: [[0.8, 20.0, 1.5], [0.2, 10.0, 1.5]]}
+
+data:
+  n_days: 365                  # paper
+  split: [300, 35, 30]         # paper
+  dt_minutes: 15               # paper
+  steps_per_day: 96            # paper
+  episode_start_hour: 8        # assumption A5
+  household_peak_kw: 1.4       # assumption
+  base_load_noise: 0.08        # assumption
+  pv_kw_per_transformer: 60.0  # assumption
+  acn_path: null               # set to an ACN-Data CSV export to use real 4W sessions
+  irradiance_path: null        # set to an hourly GHI CSV (column "ghi") for West Bengal
+  tariff:
+    normal_inr_per_kwh: 7.0    # assumption
+    peak_multiplier: 1.2       # paper
+    offpeak_multiplier: 0.8    # assumption
+    peak_hours: [18, 22]       # assumption
+    offpeak_hours: [22, 6]     # assumption
+
+env:
+  use_projection: true
+  eta_charge: 0.95             # assumption
+  eta_discharge: 0.95          # assumption
+  beta_projection: 0.05        # paper
+  unmet_penalty_inr_per_kwh: 30.0  # assumption A9
+  reward_scale: 0.001          # assumption
+
+agent:
+  actor_hidden: [128, 128]     # paper
+  critic_type: gat_mf          # paper
+  gat_heads: 4                 # paper
+  gat_hidden: 128              # paper
+  mean_field_dim: 64           # paper
+  use_mean_field: true
+
+training:
+  lr_actor: 0.0003             # paper
+  lr_critic: 0.0005            # paper
+  gamma: 0.99                  # paper
+  gae_lambda: 0.95             # paper
+  clip_eps: 0.2                # paper
+  entropy_coef: 0.01           # paper
+  ppo_epochs: 10               # paper
+  minibatches: 4               # paper
+  n_envs: 32                   # paper
+  rounds: 300                  # paper (R)
+  local_iters: 5               # paper (E)
+  aggregators_per_transformer: 2  # paper (8 aggregators)
+  federated: true
+  dual_lr: 0.001               # paper
+  d_fairness: 0.06             # paper
+  d_degradation_rel: 1.1       # paper
+  projection_gradient: true    # paper
+  device: cpu
+
+intent:
+  parser: rule                 # "hf" requires the optional [llm] extra and model weights
+  hf_model_name: meta-llama/Llama-3.1-8B-Instruct  # paper
+  max_retries: 2               # paper
+
+evaluation:
+  seeds: [0, 1, 2, 3, 4]       # paper
+  methods: [uncontrolled, tou, bandits, solver_grounded, mpc, solace]

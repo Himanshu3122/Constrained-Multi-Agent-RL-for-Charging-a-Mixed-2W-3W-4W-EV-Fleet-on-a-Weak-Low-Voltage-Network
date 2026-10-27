@@ -1,0 +1,6 @@
+# Ablation for reviewer question R1-Q2: SOLACE with the fairness multiplier frozen at 0.
+extends: study.yaml
+name: study_nofair
+scenario_set: study
+training:
+  use_fairness_constraint: false

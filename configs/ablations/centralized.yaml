@@ -1,0 +1,6 @@
+# Ablation: centralized instead of federated training.
+extends: ../default.yaml
+name: ablation_centralized
+scenario_set: full
+training:
+  federated: false

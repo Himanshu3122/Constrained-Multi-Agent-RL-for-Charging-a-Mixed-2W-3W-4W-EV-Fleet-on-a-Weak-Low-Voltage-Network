@@ -1,0 +1,13 @@
+# Baseline (reviewer R3-01): PPO with a projection safety layer applied at dispatch only,
+# in the spirit of Hossen et al. (2026): local critic, no gradient through the projection,
+# no Lagrangian constraints, no federation.
+extends: study.yaml
+name: study_ppo_proj
+scenario_set: study
+agent:
+  critic_type: local
+training:
+  federated: false
+  projection_gradient: false
+  use_fairness_constraint: false
+  use_degradation_constraint: false

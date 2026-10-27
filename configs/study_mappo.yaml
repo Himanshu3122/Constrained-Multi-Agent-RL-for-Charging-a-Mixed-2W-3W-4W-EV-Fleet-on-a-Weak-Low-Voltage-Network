@@ -1,0 +1,14 @@
+# Baseline: MAPPO with a concatenated-state critic and reward penalties (no Layer 3, no Lagrangian).
+extends: study.yaml
+name: study_mappo
+scenario_set: study
+env:
+  use_projection: false
+  violation_penalty_inr: 50.0   # assumption A19
+agent:
+  critic_type: concat
+training:
+  federated: false
+  projection_gradient: false
+  use_fairness_constraint: false
+  use_degradation_constraint: false

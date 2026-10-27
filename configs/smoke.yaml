@@ -1,0 +1,33 @@
+# Tiny CPU configuration that exercises every pipeline stage in about a minute.
+# It validates the software, NOT the paper's results.
+extends: default.yaml
+name: smoke
+data_dir: data/processed
+checkpoint_dir: checkpoints
+results_dir: results
+
+feeder:
+  n_transformers: 1
+  lv_buses_per_transformer: 8
+  households: 60
+  laterals_per_transformer: 2
+
+fleet:
+  2W: {count: 6}
+  3W: {count: 3}
+  4W: {count: 3}
+
+data:
+  n_days: 4
+  split: [2, 1, 1]
+
+training:
+  n_envs: 1
+  rounds: 2
+  local_iters: 1
+  ppo_epochs: 2
+  minibatches: 2
+
+evaluation:
+  seeds: [0]
+  methods: [uncontrolled, tou, bandits, solver_grounded, mpc, solace]
