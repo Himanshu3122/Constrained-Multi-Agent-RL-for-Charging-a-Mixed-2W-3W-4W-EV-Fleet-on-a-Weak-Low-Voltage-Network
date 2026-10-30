@@ -490,6 +490,7 @@ For additional diagnostic procedures, see [docs/troubleshooting.md](docs/trouble
 ---
 
 ## Citation
+If you use this codebase or reference the findings, please cite:
 
 ```bibtex
 @misc{solace2026,
